@@ -1,0 +1,26 @@
+main: com.fren_gor.img.Main
+version: 1.0
+name: ImgPlacer
+author: fren_gor
+
+commands:
+  placemap:
+    description: Register a new map
+    permission: img.place
+  reloadmaps:
+    description: Register a new map
+    permission: img.reload
+
+permissions:
+  img.*:
+    description: use the commands /placemap /reloadmaps
+    default: op
+    children:
+      img.reload: true
+      img.place: true
+  img.place:
+    description: use the command /start
+    default: op
+  img.reload:
+    description: use the command /start
+    default: op
