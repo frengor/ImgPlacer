@@ -116,7 +116,7 @@ public class MenuUtil implements Listener {
 	}
 
 	static {
-		left = new ClickableItem(MapUtil.setName(MapUtil.getArrowWoodLeft(), "§9Pagina Precedente")) {
+		left = new ClickableItem(MapUtil.setName(MapUtil.getArrowWoodLeft(), "§9Next Page")) {
 
 			@Override
 			public void onClick(Player p) {
@@ -127,7 +127,7 @@ public class MenuUtil implements Listener {
 
 			}
 		};
-		right = new ClickableItem(MapUtil.setName(MapUtil.getArrowWoodRight(), "§9Prossima Pagina")) {
+		right = new ClickableItem(MapUtil.setName(MapUtil.getArrowWoodRight(), "§9Prev. Page")) {
 
 			@Override
 			public void onClick(Player p) {
@@ -149,7 +149,7 @@ public class MenuUtil implements Listener {
 	private Inventory getBaseInv() {
 		Inventory inv = Bukkit.createInventory(null, 54, "§a§lSelect Map");
 
-		ItemStack paper = MapUtil.setDisplayName(new ItemStack(Material.PAPER), "§ePagina ");
+		ItemStack paper = MapUtil.setDisplayName(new ItemStack(Material.PAPER), "§ePage ");
 
 		inv.setItem(18, left.getItemStack());
 		inv.setItem(26, right.getItemStack());
@@ -208,7 +208,7 @@ public class MenuUtil implements Listener {
 
 		}
 		inv.setItem(49,
-				MapUtil.setDisplayName(new ItemStack(Material.PAPER, page), "§ePagina " + String.valueOf(page)));
+				MapUtil.setDisplayName(new ItemStack(Material.PAPER, page), "§ePage " + String.valueOf(page)));
 		if (bool)
 			p.openInventory(inv);
 		b = false;
@@ -241,7 +241,7 @@ public class MenuUtil implements Listener {
 
 		}
 		inv.setItem(49,
-				MapUtil.setDisplayName(new ItemStack(Material.PAPER, page), "§ePagina " + String.valueOf(page)));
+				MapUtil.setDisplayName(new ItemStack(Material.PAPER, page), "§ePage " + String.valueOf(page)));
 		if (bool)
 			p.openInventory(inv);
 		b = false;
