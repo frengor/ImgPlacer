@@ -5,10 +5,10 @@ author: fren_gor
 
 commands:
   placemap:
-    description: Register a new map
+    description: Place an image
     permission: img.place
   reloadmaps:
-    description: Register a new map
+    description: Reload
     permission: img.reload
 
 permissions:
@@ -19,8 +19,8 @@ permissions:
       img.reload: true
       img.place: true
   img.place:
-    description: use the command /start
+    description: use the command /placemap
     default: op
   img.reload:
-    description: use the command /start
+    description: use the command /reloadmaps
     default: op
