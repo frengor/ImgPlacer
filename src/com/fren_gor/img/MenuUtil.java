@@ -1,7 +1,9 @@
 package com.fren_gor.img;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -45,21 +47,47 @@ public class MenuUtil implements Listener {
 			return;
 		}
 
-		for (Integer c : pages.get(page).keySet()) {
+		if (!Config.getShowImage()) {
 
-			if (e.getRawSlot() == c) {
+			for (Integer c : pages.get(page).keySet()) {
 
-				MapData o = pages.get(page).get(c);
+				if (pages.get(page).get(c).s.equals(e.getCurrentItem().getItemMeta().getDisplayName().substring(2))) {
 
-				it.setItem(new ItemStack(Material.MAP, 1, new Map(Main.li.get(o.s)).data));
-				if (Main.h.containsKey(it.getUniqueId()))
-					Main.h.remove(it.getUniqueId());
-				Main.h.put(it.getUniqueId(), o.s);
-				p.sendMessage("§aSelected map: §e" + o.s);
-				p.closeInventory();
-				return;
+					MapData o = pages.get(page).get(c);
+
+					it.setItem(new ItemStack(Material.MAP, 1, new Map(Main.li.get(o.s)).data));
+					if (Main.h.containsKey(it.getUniqueId()))
+						Main.h.remove(it.getUniqueId());
+					Main.h.put(it.getUniqueId(), o.s);
+					p.sendMessage("§aSelected map: §e" + o.s);
+					p.closeInventory();
+					return;
+
+				}
+
 			}
 
+		} else {
+			for (Integer c : pages.get(page).keySet()) {
+
+				if (e.getRawSlot() == c) {
+
+					MapData o = pages.get(page).get(c);
+					if (e.getWhoClicked().hasPermission("img.image")
+							|| e.getWhoClicked().hasPermission("img.image." + o.s)) {
+						it.setItem(new ItemStack(Material.MAP, 1, new Map(Main.li.get(o.s)).data));
+						p.sendMessage("§aSelected map: §e" + o.s);
+					} else {
+						p.sendMessage("§cYou cannot select this image, you don't have permissions!");
+					}
+					if (Main.h.containsKey(it.getUniqueId()))
+						Main.h.remove(it.getUniqueId());
+					Main.h.put(it.getUniqueId(), o.s);
+					p.closeInventory();
+					return;
+				}
+
+			}
 		}
 
 	}
@@ -194,6 +222,7 @@ public class MenuUtil implements Listener {
 		b = true;
 		Inventory inv = getBaseInv();
 		page++;
+		List<ItemStack> li = new ArrayList<>();
 		if (page <= 1) {
 			inv.setItem(18, gray);
 			page = 1;
@@ -203,12 +232,24 @@ public class MenuUtil implements Listener {
 		}
 
 		for (Integer c : pages.get(page).keySet()) {
+			ItemStack item = MapUtil.getMapWithLore(pages.get(page).get(c), p);
 
-			inv.setItem(c, MapUtil.getMapWithLore(pages.get(page).get(c), p));
-
+			if (Config.getShowImage())
+				inv.setItem(c, item);
+			else {
+				if (p.hasPermission("img.image")
+						|| p.hasPermission("img.image." + item.getItemMeta().getDisplayName().substring(2))) {
+					li.add(item);
+				}
+			}
 		}
-		inv.setItem(49,
-				MapUtil.setDisplayName(new ItemStack(Material.PAPER, page), "§ePage " + String.valueOf(page)));
+
+		if (!Config.getShowImage()) {
+			for (ItemStack i : li)
+				inv.addItem(i);
+		}
+
+		inv.setItem(49, MapUtil.setDisplayName(new ItemStack(Material.PAPER, page), "§ePage " + String.valueOf(page)));
 		if (bool)
 			p.openInventory(inv);
 		b = false;
@@ -234,14 +275,25 @@ public class MenuUtil implements Listener {
 		if (page == pages.size()) {
 			inv.setItem(26, gray);
 		}
-
+		List<ItemStack> li = new ArrayList<>();
 		for (Integer c : pages.get(page).keySet()) {
-
-			inv.setItem(c, MapUtil.getMapWithLore(pages.get(page).get(c), p));
-
+			ItemStack item = MapUtil.getMapWithLore(pages.get(page).get(c), p);
+			if (Config.getShowImage())
+				inv.setItem(c, item);
+			else {
+				if (p.hasPermission("img.image")
+						|| p.hasPermission("img.image." + item.getItemMeta().getDisplayName().substring(2))) {
+					li.add(item);
+				}
+			}
 		}
-		inv.setItem(49,
-				MapUtil.setDisplayName(new ItemStack(Material.PAPER, page), "§ePage " + String.valueOf(page)));
+
+		if (!Config.getShowImage()) {
+			for (ItemStack i : li)
+				inv.addItem(i);
+		}
+
+		inv.setItem(49, MapUtil.setDisplayName(new ItemStack(Material.PAPER, page), "§ePage " + String.valueOf(page)));
 		if (bool)
 			p.openInventory(inv);
 		b = false;

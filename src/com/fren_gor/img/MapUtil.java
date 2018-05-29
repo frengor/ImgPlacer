@@ -2,6 +2,7 @@ package com.fren_gor.img;
 
 import java.util.Arrays;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -77,9 +78,15 @@ public class MapUtil {
 		return barrier.clone();
 	}
 
-	public static ItemStack getMapWithLore(MapData cosmetic, Player p) {
+	public static ItemStack getMapWithLore(MapData m, Player p) {
 
-		return setDisplayName(new ItemStack(Material.MAP), cosmetic.s);
+		if (p.hasPermission("img.image") || p.hasPermission("img.image." + m.s)) {
+			return setName(new ItemStack(Material.MAP), ChatColor.YELLOW.toString() + m.s, "", "§aClick to place this image");
+		}
+
+		return setName(new ItemStack(Material.MAP), ChatColor.RED.toString() + m.s, "",
+				"§cYou don't have the permission" + "§cto place this image");
+
 	}
 
 }

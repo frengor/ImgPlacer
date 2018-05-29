@@ -1,5 +1,5 @@
 main: com.fren_gor.img.Main
-version: 1.0
+version: 1.2
 name: ImgPlacer
 author: fren_gor
 
@@ -7,20 +7,31 @@ commands:
   placemap:
     description: Place an image
     permission: img.place
+  imagedownload:
+    description: Download an image
+    permission: img.download
   reloadmaps:
     description: Reload
     permission: img.reload
 
 permissions:
   img.*:
-    description: use the commands /placemap /reloadmaps
+    description: use the commands /placemap /reloadmaps /imagedownload
     default: op
     children:
       img.reload: true
       img.place: true
+      img.download: true
+      img.image: true
   img.place:
     description: use the command /placemap
     default: op
+  img.download:
+    description: use the command /imagedownload
+    default: op
   img.reload:
     description: use the command /reloadmaps
+    default: op
+  img.image:
+    description: user can place all the maps
     default: op

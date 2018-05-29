@@ -1,12 +1,14 @@
 package com.fren_gor.img;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,6 +44,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.fren_gor.libraries.org.inventivetalent.update.spiget.SpigetUpdate;
+import com.fren_gor.libraries.org.inventivetalent.update.spiget.UpdateCallback;
+import com.fren_gor.libraries.org.inventivetalent.update.spiget.comparator.VersionComparator;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -96,11 +102,51 @@ public class Main extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		pl = this;
+
 		if (!getDataFolder().exists()) {
 			getDataFolder().mkdirs();
 		}
+
+		Config.load();
+
+		if (Config.getAutoUpdater()) {
+			SpigetUpdate updater = new SpigetUpdate(this, 57221);
+
+			// This converts a semantic version to an integer and checks if the
+			// updated version is greater
+			updater.setVersionComparator(VersionComparator.SEM_VER);
+
+			updater.checkForUpdate(new UpdateCallback() {
+				@Override
+				public void updateAvailable(String newVersion, String downloadUrl, boolean hasDirectDownload) {
+					//// A new version is available
+					// newVersion - the latest version
+					// downloadUrl - URL to the download
+					// hasDirectDownload - whether the update is available for a
+					//// direct download on spiget.org
+					Bukkit.getConsoleSender().sendMessage("§eImgPlacer is updating!");
+					if (hasDirectDownload) {
+						if (updater.downloadUpdate()) {
+							// Update downloaded, will be loaded when the server
+							// restarts
+							Bukkit.getConsoleSender()
+									.sendMessage("§bUpdate downloaded, will be loaded when the server restarts");
+						} else {
+							// Update failed
+							getLogger().warning("Update download failed, reason is " + updater.getFailReason());
+						}
+					}
+				}
+
+				@Override
+				public void upToDate() {
+					//// Plugin is up-to-date
+					Bukkit.getConsoleSender().sendMessage("§bImgPlacer is up to date!");
+				}
+			});
+		}
 		for (File f : getDataFolder().listFiles()) {
-			if (f.getName().equals("saves.dat")) {
+			if (f.getName().equals("saves.dat") || f.getName().equals("config.yml")) {
 				continue;
 			}
 			Image img = null;
@@ -145,6 +191,24 @@ public class Main extends JavaPlugin implements Listener {
 		}
 
 		Bukkit.getPluginManager().registerEvents(this, this);
+
+	}
+
+	// Tested with Imgur (https://imgur.com/)
+	public static boolean download(String URL, String filename) {
+		try {
+			if (!filename.endsWith(".png")) {
+				filename = filename + ".png";
+			}
+			URL url = new URL(URL);
+			BufferedImage img = ImageIO.read(url);
+			File file = new File(getInstance().getDataFolder(), filename);
+			ImageIO.write(img, "png", file);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -210,10 +274,16 @@ public class Main extends JavaPlugin implements Listener {
 		if (e.getBlockFace() == BlockFace.DOWN || e.getBlockFace() == BlockFace.UP) {
 			return;
 		}
+		
 		if (lp.contains(e.getPlayer()) && e.getItem() != null && e.getItem().getType() == Material.ITEM_FRAME
 				&& !thereAreitemFrame(e.getClickedBlock().getRelative(e.getBlockFace()).getLocation())) {
 
 			e.setCancelled(true);
+			
+			if (Config.getWhitelistBlocks() && !Config.getList().contains(e.getClickedBlock().getType())) {
+				return;
+			}
+			
 			if (e.getPlayer().getGameMode() == GameMode.SPECTATOR
 					|| e.getPlayer().getGameMode() == GameMode.ADVENTURE) {
 
@@ -295,12 +365,14 @@ public class Main extends JavaPlugin implements Listener {
 			return true;
 
 		} else if (label.equalsIgnoreCase("reloadmaps") || label.equalsIgnoreCase("imgplacer:reloadmaps")) {
-			
+
 			if (!getDataFolder().exists()) {
 				getDataFolder().mkdirs();
 			}
+			Config.load();
+			li.clear();
 			for (File f : getDataFolder().listFiles()) {
-				if (f.getName().equals("saves.dat")) {
+				if (f.getName().equals("saves.dat") || f.getName().equals("config.yml")) {
 					continue;
 				}
 				Image img = null;
@@ -312,8 +384,38 @@ public class Main extends JavaPlugin implements Listener {
 				li.put(f.getName(), img);
 
 			}
-			
+
 			sender.sendMessage("§aMaps reloaded");
+		} else if (label.equalsIgnoreCase("imagedownload") || label.equalsIgnoreCase("imgplacer:imagedownload")) {
+			if (args.length > 2) {
+				sender.sendMessage("§cUsage: /imagedownload <link> <imageName>");
+				return false;
+			}
+			if (download(args[0], args[1])) {
+				li.clear();
+				for (File f : getDataFolder().listFiles()) {
+					if (f.getName().equals("saves.dat") || f.getName().equals("config.yml")) {
+						continue;
+					}
+					Image img = null;
+					try {
+						img = ImageIO.read(f);
+					} catch (Exception e) {
+						continue;
+					}
+					li.put(f.getName(), img);
+
+				}
+
+				sender.sendMessage("§aSuccesfully downloaded image §e" + args[1]);
+
+			} else {
+
+				sender.sendMessage("§cCannot download image. Make sure that the download link is correct");
+				return false;
+
+			}
+
 		}
 		return false;
 	}
