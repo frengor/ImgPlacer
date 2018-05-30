@@ -42,7 +42,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.fren_gor.libraries.org.inventivetalent.update.spiget.SpigetUpdate;
@@ -432,11 +431,11 @@ public class Main extends JavaPlugin implements Listener {
 
 	}
 
-	public static Plugin getInstance() {
+	public static Main getInstance() {
 		return pl;
 	}
 
-	private static Plugin pl;
+	private static Main pl;
 	static HashMap<UUID, MenuUtil> menus = new HashMap<>();
 
 }
