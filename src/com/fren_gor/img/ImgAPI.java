@@ -1,8 +1,10 @@
 package com.fren_gor.img;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +53,15 @@ public final class ImgAPI {
 
 	}
 
+	public static Image download(String URL, File file) throws IOException {
+
+		URL url = new URL(URL);
+		BufferedImage img = ImageIO.read(url);
+		ImageIO.write(img, "png", file);
+
+		return img;
+	}
+
 	public static Image getImage(String name) throws IOException {
 
 		return ImageIO.read(new File(Main.getInstance().getDataFolder(), name));
@@ -93,6 +104,8 @@ public final class ImgAPI {
 
 		if (Main.lh.contains(i.getUniqueId()))
 			Main.lh.remove(i.getUniqueId());
+
+		i.remove();
 
 	}
 

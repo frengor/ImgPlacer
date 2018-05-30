@@ -79,6 +79,8 @@ public class MenuUtil implements Listener {
 						p.sendMessage("§aSelected map: §e" + o.s);
 					} else {
 						p.sendMessage("§cYou cannot select this image, you don't have permissions!");
+						p.closeInventory();
+						return;
 					}
 					if (Main.h.containsKey(it.getUniqueId()))
 						Main.h.remove(it.getUniqueId());
