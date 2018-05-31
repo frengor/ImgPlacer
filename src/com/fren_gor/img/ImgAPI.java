@@ -77,7 +77,9 @@ public final class ImgAPI {
 	}
 
 	public static ItemFrame spawnItemFrame(Location l, BlockFace bf) {
-
+		if (!l.getChunk().isLoaded()) {
+			l.getChunk().load();
+		}
 		ItemFrame i = (ItemFrame) l.getWorld().spawnEntity(l, EntityType.ITEM_FRAME);
 		i.setFacingDirection(bf);
 		Main.h.put(i.getUniqueId(), "");
