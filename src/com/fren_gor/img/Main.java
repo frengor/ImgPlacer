@@ -44,6 +44,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.fren_gor.img.events.InteractItemFrameEvent;
+import com.fren_gor.img.events.RemoveItemFrameEvent;
 import com.fren_gor.libraries.org.inventivetalent.update.spiget.SpigetUpdate;
 import com.fren_gor.libraries.org.inventivetalent.update.spiget.UpdateCallback;
 import com.fren_gor.libraries.org.inventivetalent.update.spiget.comparator.VersionComparator;
@@ -105,6 +107,9 @@ public class Main extends JavaPlugin implements Listener {
 		if (!getDataFolder().exists()) {
 			getDataFolder().mkdirs();
 		}
+
+		Bukkit.getPluginCommand("setimage").setExecutor(new Spray());
+		Bukkit.getPluginCommand("removeimage").setExecutor(new Spray());
 
 		Config.load();
 
@@ -273,16 +278,16 @@ public class Main extends JavaPlugin implements Listener {
 		if (e.getBlockFace() == BlockFace.DOWN || e.getBlockFace() == BlockFace.UP) {
 			return;
 		}
-		
+
 		if (lp.contains(e.getPlayer()) && e.getItem() != null && e.getItem().getType() == Material.ITEM_FRAME
 				&& !thereAreitemFrame(e.getClickedBlock().getRelative(e.getBlockFace()).getLocation())) {
 
 			e.setCancelled(true);
-			
+
 			if (Config.getWhitelistBlocks() && !Config.getList().contains(e.getClickedBlock().getType())) {
 				return;
 			}
-			
+
 			if (e.getPlayer().getGameMode() == GameMode.SPECTATOR
 					|| e.getPlayer().getGameMode() == GameMode.ADVENTURE) {
 
@@ -316,16 +321,39 @@ public class Main extends JavaPlugin implements Listener {
 		Set<UUID> list = h.keySet();
 		if (list.contains(e.getRightClicked().getUniqueId())) {
 			e.setCancelled(true);
+			
 			if (!lp.contains(e.getPlayer())) {
+				InteractItemFrameEvent event1 = new InteractItemFrameEvent(e.getPlayer(),
+						(ItemFrame) e.getRightClicked(), false);
+				
+				Bukkit.getPluginManager().callEvent(event1);
 				return;
 			}
 
 			if (e.getPlayer().isSneaking()) {
 
+				RemoveItemFrameEvent event = new RemoveItemFrameEvent(e.getPlayer(), (ItemFrame) e.getRightClicked());
+
+				Bukkit.getPluginManager().callEvent(event);
+
+				if (event.isCancelled()) {
+					return;
+				}
+
 				h.remove(e.getRightClicked().getUniqueId());
 				e.getRightClicked().remove();
 
 			} else {
+
+				InteractItemFrameEvent event = new InteractItemFrameEvent(e.getPlayer(),
+						(ItemFrame) e.getRightClicked(), true);
+
+				Bukkit.getPluginManager().callEvent(event);
+
+				if (event.isCancelled()) {
+					return;
+				}
+
 				MapData[] c = new MapData[li.size()];
 				int in = 0;
 				for (String s : li.keySet()) {

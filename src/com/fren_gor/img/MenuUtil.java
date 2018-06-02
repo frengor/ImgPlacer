@@ -122,6 +122,7 @@ public class MenuUtil implements Listener {
 			pages.put(1, new HashMap<Integer, MapData>());
 		}
 		Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
+		Main.menus.put(p.getUniqueId(), this);
 		loop();
 	}
 
@@ -131,6 +132,7 @@ public class MenuUtil implements Listener {
 	private final static ClickableItem right;
 	private final static ItemStack gray;
 	private final static ItemStack white;
+	private final static ClickableItem click;
 
 	public static ItemStack craftCustomSkull(String url, String name, String... lore) {
 
@@ -146,7 +148,7 @@ public class MenuUtil implements Listener {
 	}
 
 	static {
-		left = new ClickableItem(MapUtil.setName(MapUtil.getArrowWoodLeft(), "§9Next Page")) {
+		left = new ClickableItem(MapUtil.setName(MapUtil.getArrowWoodLeft(), "§9Prev. Page")) {
 
 			@Override
 			public void onClick(Player p) {
@@ -157,7 +159,7 @@ public class MenuUtil implements Listener {
 
 			}
 		};
-		right = new ClickableItem(MapUtil.setName(MapUtil.getArrowWoodRight(), "§9Prev. Page")) {
+		right = new ClickableItem(MapUtil.setName(MapUtil.getArrowWoodRight(), "§9Next Page")) {
 
 			@Override
 			public void onClick(Player p) {
@@ -165,6 +167,20 @@ public class MenuUtil implements Listener {
 				if (Main.menus.containsKey(p.getUniqueId())) {
 					((MenuUtil) Main.menus.get(p.getUniqueId())).nextPage();
 				}
+
+			}
+		};
+		click = new ClickableItem(MapUtil.setName(new ItemStack(Material.BARRIER), "§cSet Empty", "",
+				"§eClick this if you want", "§eto use this ItemFrame", "§eas Spray ItemFrame")) {
+
+			@Override
+			public void onClick(Player p) {
+
+				if (Main.menus.containsKey(p.getUniqueId())) {
+					ImgAPI.setEmpty(((MenuUtil) Main.menus.get(p.getUniqueId())).it);
+				}
+
+				p.closeInventory();
 
 			}
 		};
@@ -183,7 +199,7 @@ public class MenuUtil implements Listener {
 
 		inv.setItem(18, left.getItemStack());
 		inv.setItem(26, right.getItemStack());
-		inv.setItem(48, white);
+		inv.setItem(48, click.getItemStack());
 		inv.setItem(49, paper);
 		inv.setItem(50, white);
 
@@ -313,7 +329,9 @@ public class MenuUtil implements Listener {
 			public void run() {
 				if (p.getOpenInventory().getTopInventory() == null
 						|| !p.getOpenInventory().getTopInventory().getTitle().equals("§a§lSelect Map")) {
-
+					if (b) {
+						return;
+					}
 					unregister();
 					cancel();
 
@@ -325,6 +343,7 @@ public class MenuUtil implements Listener {
 
 	public synchronized void unregister() {
 		InventoryClickEvent.getHandlerList().unregister(this);
+		Main.menus.remove(p.getUniqueId());
 	}
 
 }

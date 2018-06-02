@@ -1,5 +1,5 @@
 main: com.fren_gor.img.Main
-version: 1.3.1
+version: 1.4.0
 name: ImgPlacer
 author: fren_gor
 
@@ -13,6 +13,12 @@ commands:
   reloadmaps:
     description: Reload
     permission: img.reload
+  setimage:
+    description: Set image to a player (Enter Spray Mode)
+    permission: img.set
+  removeimage:
+    description: Remove image from a player (Exit Spray Mode)
+    permission: img.remove
 
 permissions:
   img.*:
@@ -23,6 +29,9 @@ permissions:
       img.place: true
       img.download: true
       img.image: true
+      img.remove: true
+      img.set: true
+      img.spray: true
   img.place:
     description: use the command /placemap
     default: op
@@ -34,4 +43,13 @@ permissions:
     default: op
   img.image:
     description: user can place all the maps
+    default: op
+  img.set:
+    description: user can do /setimage
+    default: op
+  img.remove:
+    description: user can do /removeimage
+    default: op
+  img.spray:
+    description: user can place sprays
     default: op

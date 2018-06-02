@@ -22,7 +22,10 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import com.fren_gor.libraries.RandomString;
 
 public final class ImgAPI {
 
@@ -47,9 +50,31 @@ public final class ImgAPI {
 	}
 
 	@Nullable
+	public static ItemFrame getItemFrame(UUID u) {
+		for (ItemFrame i : getItemFrames()) {
+			if (i.getUniqueId().equals(u))
+				return i;
+		}
+		return null;
+	}
+
+	@Nullable
 	public static String getImageName(ItemFrame i) {
 
 		return Main.h.get(i.getUniqueId());
+
+	}
+
+	@Nullable
+	public static String getImageName(Image i) {
+
+		for (String s : Main.li.keySet()) {
+			if (compareImages(Main.li.get(s), i)) {
+				return s;
+			}
+		}
+
+		return null;
 
 	}
 
@@ -90,11 +115,53 @@ public final class ImgAPI {
 
 		Map m = new Map(getImage(imageName));
 		for (ItemFrame it : i) {
-			it.setItem(new ItemStack(Material.MAP, 1, new Map(Main.li.get(Main.h.get(it.getUniqueId()))).data));
+			it.setItem(new ItemStack(Material.MAP, 1, m.data));
 			if (Main.h.containsKey(it.getUniqueId())) {
 				Main.h.remove(it.getUniqueId());
 			}
+
 			Main.h.put(it.getUniqueId(), imageName);
+
+		}
+		return m;
+
+	}
+
+	public static void setEmpty(ItemFrame... i) {
+
+		for (ItemFrame it : i) {
+			if (Main.h.containsKey(it.getUniqueId())) {
+				Main.h.remove(it.getUniqueId());
+			}
+
+			Main.h.put(it.getUniqueId(), "");
+			it.setItem(new ItemStack(Material.AIR));
+			
+		}
+
+	}
+
+	public static Map setMap(Image image, ItemFrame... i) {
+
+		Map m = new Map(image);
+		for (ItemFrame it : i) {
+			it.setItem(new ItemStack(Material.MAP, 1, m.data));
+			if (Main.h.containsKey(it.getUniqueId())) {
+				Main.h.remove(it.getUniqueId());
+			}
+
+			if (getImageName(image) == null) {
+
+				String randomString = new RandomString(8).nextString() + ".png";
+				loadImage(image, randomString);
+				Main.h.put(it.getUniqueId(), randomString);
+
+			} else {
+
+				Main.h.put(it.getUniqueId(), getImageName(image));
+
+			}
+
 		}
 		return m;
 
@@ -121,6 +188,58 @@ public final class ImgAPI {
 		if (Main.li.containsKey(imageName)) {
 			Main.li.remove(imageName);
 		}
+	}
+
+	public static void setSpray(Player p, String imageName) throws IOException {
+		Spray.setSpray(p, ImgAPI.getImage(imageName));
+	}
+
+	public static void setSpray(Player p, Image image) {
+
+		Spray.setSpray(p, image);
+
+	}
+
+	public static void removeSpray(Player p) {
+
+		Spray.removeSpray(p);
+
+	}
+
+	public static boolean compareImages(Image imgA, Image imgB) {
+		return compareImages((BufferedImage) imgA, (BufferedImage) imgB);
+	}
+
+	/**
+	 * Compares two images pixel by pixel.
+	 *
+	 * @param imgA
+	 *            the first image.
+	 * @param imgB
+	 *            the second image.
+	 * @return whether the images are both the same or not.
+	 * @author Mr. Polywhirl
+	 */
+	public static boolean compareImages(BufferedImage imgA, BufferedImage imgB) {
+		// The images must be the same size.
+		if (imgA.getWidth() != imgB.getWidth() || imgA.getHeight() != imgB.getHeight()) {
+			return false;
+		}
+
+		int width = imgA.getWidth();
+		int height = imgA.getHeight();
+
+		// Loop over every pixel.
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				// Compare the pixels for equality.
+				if (imgA.getRGB(x, y) != imgB.getRGB(x, y)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 }
