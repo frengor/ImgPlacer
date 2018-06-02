@@ -76,6 +76,7 @@ public class Spray implements Listener, CommandExecutor {
 		if (e.getClicker().hasPermission("img.spray") && h.containsKey(e.getClicker())) {
 
 			ImgAPI.setMap(deepCopy((BufferedImage) h.get(e.getClicker())), e.getClicked());
+			ImgAPI.resetOnRestart(e.getClicked());
 
 		}
 

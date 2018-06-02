@@ -56,6 +56,7 @@ public class Main extends JavaPlugin implements Listener {
 	static HashMap<String, Image> li = new HashMap<>();
 	static HashMap<UUID, String> h = new HashMap<>();
 	static List<UUID> lh = new ArrayList<>();
+	static List<UUID> r = new ArrayList<>();
 
 	@EventHandler
 	public void onHit(EntityDamageEvent e) {
@@ -84,6 +85,7 @@ public class Main extends JavaPlugin implements Listener {
 					if (h.containsKey(u)) {
 
 						if (h.get(u) == null || h.get(u).equals("")) {
+							((ItemFrame) e).setItem(new ItemStack(Material.AIR));
 							continue;
 						}
 						if (!li.keySet().contains(h.get(u))) {
@@ -92,6 +94,12 @@ public class Main extends JavaPlugin implements Listener {
 						}
 						((ItemFrame) e).setItem(new ItemStack(Material.MAP, 1, new Map(li.get(h.get(u))).data));
 						lh.add(e.getUniqueId());
+						if (r.contains(e.getUniqueId())) {
+							if (h.containsKey(e.getUniqueId()))
+								h.remove(e.getUniqueId());
+							h.put(e.getUniqueId(), "");
+
+						}
 					}
 				}
 			}
@@ -321,11 +329,11 @@ public class Main extends JavaPlugin implements Listener {
 		Set<UUID> list = h.keySet();
 		if (list.contains(e.getRightClicked().getUniqueId())) {
 			e.setCancelled(true);
-			
+
 			if (!lp.contains(e.getPlayer())) {
 				InteractItemFrameEvent event1 = new InteractItemFrameEvent(e.getPlayer(),
 						(ItemFrame) e.getRightClicked(), false);
-				
+
 				Bukkit.getPluginManager().callEvent(event1);
 				return;
 			}

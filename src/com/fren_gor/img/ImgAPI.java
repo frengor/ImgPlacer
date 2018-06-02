@@ -136,7 +136,7 @@ public final class ImgAPI {
 
 			Main.h.put(it.getUniqueId(), "");
 			it.setItem(new ItemStack(Material.AIR));
-			
+
 		}
 
 	}
@@ -204,6 +204,14 @@ public final class ImgAPI {
 
 		Spray.removeSpray(p);
 
+	}
+
+	public static void resetOnRestart(ItemFrame... i) {
+		for (ItemFrame it : i) {
+			if (!Main.r.contains(it.getUniqueId())) {
+				Main.r.add(it.getUniqueId());
+			}
+		}
 	}
 
 	public static boolean compareImages(Image imgA, Image imgB) {
