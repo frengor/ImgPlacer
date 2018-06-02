@@ -46,6 +46,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.fren_gor.img.events.InteractItemFrameEvent;
 import com.fren_gor.img.events.RemoveItemFrameEvent;
+import com.fren_gor.libraries.Metrics;
 import com.fren_gor.libraries.org.inventivetalent.update.spiget.SpigetUpdate;
 import com.fren_gor.libraries.org.inventivetalent.update.spiget.UpdateCallback;
 import com.fren_gor.libraries.org.inventivetalent.update.spiget.comparator.VersionComparator;
@@ -120,6 +121,8 @@ public class Main extends JavaPlugin implements Listener {
 		Bukkit.getPluginCommand("removeimage").setExecutor(new Spray());
 
 		Config.load();
+		
+		new Metrics(this);
 
 		if (Config.getAutoUpdater()) {
 			SpigetUpdate updater = new SpigetUpdate(this, 57221);
@@ -136,13 +139,13 @@ public class Main extends JavaPlugin implements Listener {
 					// downloadUrl - URL to the download
 					// hasDirectDownload - whether the update is available for a
 					//// direct download on spiget.org
-					Bukkit.getConsoleSender().sendMessage("§eImgPlacer is updating!");
+					Bukkit.getConsoleSender().sendMessage("Â§eImgPlacer is updating!");
 					if (hasDirectDownload) {
 						if (updater.downloadUpdate()) {
 							// Update downloaded, will be loaded when the server
 							// restarts
 							Bukkit.getConsoleSender()
-									.sendMessage("§bUpdate downloaded, will be loaded when the server restarts");
+									.sendMessage("Â§bUpdate downloaded, will be loaded when the server restarts");
 						} else {
 							// Update failed
 							getLogger().warning("Update download failed, reason is " + updater.getFailReason());
@@ -153,7 +156,7 @@ public class Main extends JavaPlugin implements Listener {
 				@Override
 				public void upToDate() {
 					//// Plugin is up-to-date
-					Bukkit.getConsoleSender().sendMessage("§bImgPlacer is up to date!");
+					Bukkit.getConsoleSender().sendMessage("Â§bImgPlacer is up to date!");
 				}
 			});
 		}
@@ -388,12 +391,12 @@ public class Main extends JavaPlugin implements Listener {
 			if (lp.contains(p)) {
 
 				lp.remove(p);
-				p.sendMessage("§bRemoved from placer!");
+				p.sendMessage("Â§bRemoved from placer!");
 
 			} else {
 
 				lp.add(p);
-				p.sendMessage("§bAdded to placer!");
+				p.sendMessage("Â§bAdded to placer!");
 
 			}
 
@@ -420,10 +423,10 @@ public class Main extends JavaPlugin implements Listener {
 
 			}
 
-			sender.sendMessage("§aMaps reloaded");
+			sender.sendMessage("Â§aMaps reloaded");
 		} else if (label.equalsIgnoreCase("imagedownload") || label.equalsIgnoreCase("imgplacer:imagedownload")) {
 			if (args.length > 2) {
-				sender.sendMessage("§cUsage: /imagedownload <link> <imageName>");
+				sender.sendMessage("Â§cUsage: /imagedownload <link> <imageName>");
 				return false;
 			}
 			if (download(args[0], args[1])) {
@@ -442,11 +445,11 @@ public class Main extends JavaPlugin implements Listener {
 
 				}
 
-				sender.sendMessage("§aSuccesfully downloaded image §e" + args[1]);
+				sender.sendMessage("Â§aSuccesfully downloaded image Â§e" + args[1]);
 
 			} else {
 
-				sender.sendMessage("§cCannot download image. Make sure that the download link is correct");
+				sender.sendMessage("Â§cCannot download image. Make sure that the download link is correct");
 				return false;
 
 			}
